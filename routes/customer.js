@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const {AuthorizationCustomer} = express.Router("../middlewares");
-const {CustomerController} = require("../controllers");
+const { AuthorizationCustomer } = express.Router("../middlewares");
+const { CustomerController } = require("../controllers");
 
-router.get("/", CustomerController.findAll);
-router.post("/", CustomerController.create);
-//router.use("/:id", AuthorizationCustomer);
-router.get("/:id", CustomerController.findOne);
-router.put("/:id", CustomerController.update);
-router.delete("/:id", CustomerController.destroy);
+router.post("/login", CustomerController.login);
+router.post("/register", CustomerController.register);
+
+//router.use(AuthorizationCustomer);
+
+router.get("/dashboard", CustomerController.dashboard);
+
+router.patch("/createLink", CustomerController.createLink);
+router.patch("/destroyLink/:id", CustomerController.destroyLink);
 
 module.exports = router;

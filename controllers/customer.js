@@ -1,18 +1,18 @@
 class CustomerController {
-	static findAll(req, res, next) {
-	
+	static login(req, res, next) {
+
 	}
-	static findOne(req, res, next) {
-	
+	static register(req, res, next) {
+
 	}
-	static create(req, res, next) {
-	
+	static dashboard(req, res, next) {
+
 	}
-	static update(req, res, next) {
-	
+	static createLink(req, res, next) {
+
 	}
-	static destroy(req, res, next) {
-	
+	static destroyLink(req, res, next) {
+
 	}
 }
 
