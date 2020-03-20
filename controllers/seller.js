@@ -128,13 +128,40 @@ class SellerController {
 			});
 		}
 	}
-	static async createLink(req, res, next) {
-		const collection = req.sellerCollection;
-
-	}
 	static async destroyLink(req, res, next) {
 		const collection = req.sellerCollection;
-
+		const id = req.params.id;
+		const slug = req.loggedSellerSlug;
+		const seller = await SellerModel.findOne(collection, slug);
+		if (!seller) {
+			res.status(404).json({
+				message: "User not found!",
+				status: "error"
+			});
+		} else {
+			const linksTemp = [];
+			let flag = false;
+			seller.links.forEach(el => {
+				if (el.id !== id) {
+					linksTemp.push(el);
+				} else {
+					flag = true;
+				}
+			});
+			if (!flag) {
+				res.status(404).json({
+					message: "Data not found!",
+					status: "error"
+				});
+			} else {
+				seller.links = linksTemp;
+				await SellerModel.update(collection, slug, seller);
+				res.status(200).json({
+					message: "Succesful delete chat!",
+					status: "success"
+				});
+			}
+		}
 	}
 	static async createChatBot(req, res, next) {
 		const collection = req.sellerCollection;

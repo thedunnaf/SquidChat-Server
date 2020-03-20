@@ -11,8 +11,7 @@ router.use(AuthenticationSeller);
 //router.use(AuthorizationSeller);
 router.get("/dashboard", SellerController.dashboard);
 
-router.patch("/createLink", SellerController.createLink);
-router.patch("/:id/destroyLink", SellerController.destroyLink);
+router.patch("/destroyLink/:id", SellerController.destroyLink);
 
 router.patch("/createChatBot", SellerController.createChatBot);
 router.patch("/updateChatBot/:id", SellerController.updateChatBot);
