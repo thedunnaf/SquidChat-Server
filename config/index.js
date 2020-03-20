@@ -4,9 +4,9 @@ const url = `mongodb://${process.env.USERNAME}:${process.env.PASSWORD}@localhost
 
 const dbName = "SquidChat";
 const client = new MongoClient(
-	url, 
+	url,
 	{
-		useNewUrlParser: true, 
+		useNewUrlParser: true,
 		useUnifiedTopology: true
 	}
 );
