@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { AuthorizationCustomer } = express.Router("../middlewares");
+const { AuthenticationCustomer, AuthorizationCustomer } = require("../middlewares");
 const { CustomerController } = require("../controllers");
 
 router.post("/login", CustomerController.login);
 router.post("/register", CustomerController.register);
 
+router.use(AuthenticationCustomer);
 //router.use(AuthorizationCustomer);
 
 router.get("/dashboard", CustomerController.dashboard);

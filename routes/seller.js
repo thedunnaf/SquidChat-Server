@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { AuthorizationSeller } = require("../middlewares");
+const { AuthenticationSeller, AuthorizationSeller } = require("../middlewares");
 const { SellerController } = require("../controllers");
+
 
 router.post("/login", SellerController.login);
 router.post("/register", SellerController.register);
 
+router.use(AuthenticationSeller);
 //router.use(AuthorizationSeller);
 router.get("/dashboard", SellerController.dashboard);
 

@@ -1,13 +1,15 @@
 const Connect = require("./connect");
 const {
-	Authentication, 
-	AuthorizationCustomer, 
+	AuthenticationSeller,
+	AuthenticationCustomer,
+	AuthorizationCustomer,
 	AuthorizationSeller
 } = require("./auth");
 
 module.exports = {
 	Connect,
-	Authentication, 
-	AuthorizationCustomer, 
+	AuthenticationSeller,
+	AuthenticationCustomer,
+	AuthorizationCustomer,
 	AuthorizationSeller
 }

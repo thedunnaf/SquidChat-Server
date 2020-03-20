@@ -1,26 +1,30 @@
-const {client, dbName} = require("../config");
+const { client, dbName } = require("../config");
 
 async function Connect(req, res, next) {
 	try {
 		await client.connect();
 		const db = await client.db(dbName);
-		const collections = await db.listCollection.toArray();
-		if(
-			collections.includes("Sellers") &&
-			collections.includes("Customers") &&
-			collections.includes("Chats") &&
-			collections.includes("ChatBots")
-		) {
+		const collections = await db.listCollections().toArray();
+		let count = 0;
+		collections.forEach(el => {
+			if (
+				el.name == "Sellers" ||
+				el.name == "Customers" ||
+				el.name == "Chats"
+			) {
+				count++;
+			}
+		});
+		if (count === 3) {
 			req.sellerCollection = db.collection("Sellers");
-			req.customerCollection = db.collection("Customer");
+			req.customerCollection = db.collection("Customers");
 			req.chatCollection = db.collection("Chats");
-			req.chatBotCollection = db.collection("ChatBots");
 			next();
 		} else {
 			throw new Error();
 		}
-	} catch(err) {
-		res.status(500).json({status: "error", message: "Collection not found!. Please run `npm run db:migrate` on your computer!"});
+	} catch (err) {
+		res.status(500).json({ status: "error", message: "Collection not found!. Please run `npm run db:migrate` on your computer!" });
 	}
 }
 
