@@ -5,4 +5,3 @@ const { ChatController } = require("../controllers");
 router.get("/:link", ChatController.findAllChatByLink);
 
 module.exports = router;
-
