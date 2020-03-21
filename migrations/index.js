@@ -121,19 +121,24 @@ async function Migrating() {
                     bsonType: "object",
                     required: [
                         "link",
-                        "seller_chats",
-                        "customer_chats",
+                        "seller_slug",
+                        "customer_slug",
+                        "chats",
                     ],
                     properties: {
                         link: {
                             bsonType: "string",
                             description: "must be a string and is required",
                         },
-                        seller_chats: {
-                            bsonType: "array",
-                            description: "must be a array and is required",
+                        seller_slug: {
+                            bsonType: "string",
+                            description: "must be a string and is required",
                         },
-                        customer_chats: {
+                        customer_slug: {
+                            bsonType: "string",
+                            description: "must be a string and is required",
+                        },
+                        chats: {
                             bsonType: "array",
                             description: "must be a array and is required",
                         },
