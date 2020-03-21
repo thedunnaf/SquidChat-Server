@@ -33,17 +33,17 @@ class ChatController {
         const created_at = new Date();
         const chat = await ChatModel.findOne(collection, link);
         let obj;
-        const answers = [];
+        let obj2;
         if (sellerSlug) {
             obj = {
                 text,
-                seller_slug: sellerSlug,
+                role: "seller",
                 created_at
             }
         } else if (customerSlug) {
             obj = {
                 text,
-                customer_slug: customerSlug,
+                role: "customer",
                 created_at
             }
             const tokenized = tokenizer.tokenize(text);
@@ -53,28 +53,42 @@ class ChatController {
             });
             const slug = chat.seller_slug;
             const seller = await SellerModel.findOne(collection2, slug);
+            let count = 0;
+            let answer = "";
             seller.chat_bots.forEach((el, i) => {
-                let count = 0;
+                let count2 = 0;
                 el.key.forEach(el2 => {
                     stemmed.forEach(el3 => {
                         if (el2 == el3) {
-                            count++;
+                            count2++;
                         }
                     });
                 });
-                if (count > (stemmed.length * 80 / 100)) {
-                    answers.push(el.answer);
+                if (count2 > (el.key.length * 80 / 100)) {
+                    if (count2 > count) {
+                        count = count2;
+                        answer = el.answer;
+                    }
                 }
             });
+            if (count > 0) {
+                obj2 = {
+                    text: answer,
+                    role: "seller",
+                    created_at
+                }
+            }
         }
         chat.chats.unshift(obj);
+        if (obj2) {
+            chat.chats.unshift(obj2);
+        }
         await ChatModel.update(collection, link, chat);
         res.status(201).json({
             message: "Succesful add chat!",
             status: "succes",
             payload: {
-                chat,
-                answers: answers
+                chat
             }
         });
     }

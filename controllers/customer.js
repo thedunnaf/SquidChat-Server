@@ -163,7 +163,7 @@ class CustomerController {
 		const collection = req.customerCollection;
 		const collection2 = req.sellerCollection;
 		const collection3 = req.chatCollection;
-		const customerSlug = req.body.customerSlug;
+		const customerSlug = req.loggedCustomerSlug;
 		const sellerSlug = req.body.sellerSlug;
 		const socketLink = `/${sellerSlug}/${customerSlug}`;
 		const customer = await CustomerModel.findOne(collection, customerSlug);
@@ -175,15 +175,16 @@ class CustomerController {
 				status: "error"
 			});
 		} else {
+			const id = `link_${Date.now()}`;
 			customer.links.push({
-				id: `link_${Date.now()}`,
+				id,
 				link: socketLink,
 				seller: seller.name,
 				customer: customer.name,
 				created_at
 			});
 			seller.links.push({
-				id: `link_${Date.now()}`,
+				id,
 				link: socketLink,
 				seller: seller.name,
 				customer: customer.name,
@@ -193,6 +194,7 @@ class CustomerController {
 			await SellerModel.update(collection2, sellerSlug, seller);
 
 			const obj = {
+				id,
 				link: socketLink,
 				seller_slug: sellerSlug,
 				customer_slug: customerSlug,
@@ -212,6 +214,7 @@ class CustomerController {
 	static async destroyLink(req, res, next) {
 		const collection = req.customerCollection;
 		const id = req.params.id;
+		console.log(id);
 		const slug = req.loggedCustomerSlug;
 		const customer = await CustomerModel.findOne(collection, slug);
 		if (!customer) {
@@ -225,10 +228,11 @@ class CustomerController {
 			customer.links.forEach(el => {
 				if (el.id != id) {
 					linksTemp.push(el);
+				} else {
 					flag = true;
 				}
 			});
-			if (flag) {
+			if (!flag) {
 				res.status(404).json({
 					message: "Data not found!",
 					status: "error"
