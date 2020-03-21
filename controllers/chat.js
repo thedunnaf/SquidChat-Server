@@ -51,7 +51,6 @@ class ChatController {
             tokenized.forEach(el => {
                 stemmed.push(stemmer.stem(el));
             });
-            console.log(stemmed);
             const slug = chat.seller_slug;
             const seller = await SellerModel.findOne(collection2, slug);
             seller.chat_bots.forEach((el, i) => {
@@ -82,17 +81,3 @@ class ChatController {
 }
 
 module.exports = ChatController;
-
-
-// Untuk nanda:
-// Destroy link 
-// Role chat
-// Last chat untuk customer dan seller
-// Status chat, kalo dari server false, dari client true
-
-
-
-
-
-// 9:58
-// Setiap ada yg chat baru kamu rubah status jd false lg
