@@ -23,3 +23,5 @@ app.use("/", Routers);
 server.listen(port, () => {
 	console.log(`Listening on port ${port}`);
 });
+
+// module.exports = app
