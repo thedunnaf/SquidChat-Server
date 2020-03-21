@@ -184,7 +184,7 @@ describe('Test Cutomer Auth', function () {
                         expect(seller).toHaveProperty('password', CUSTOMER_PASSWORD)
                         expect(seller).toHaveProperty('image_url', CUSTOMER_IMAGE_URL)
                         expect(seller).toHaveProperty('slug')
-                        expect(seller).toHaveProperty('links')
+                        expect(seller).toHasellersveProperty('links')
                         expect(seller).toHaveProperty('_id')
                         done()
                     })
