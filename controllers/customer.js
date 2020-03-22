@@ -1,4 +1,4 @@
-const { CustomerModel, SellerModel } = require("../models");
+const { CustomerModel, SellerModel, ChatModel } = require("../models");
 const { hashPassword, comparePassword, signToken, slugGenerator } = require("../helpers");
 
 class CustomerController {
@@ -90,6 +90,53 @@ class CustomerController {
 			}
 		}
 	}
+	static async updateAccount(req, res, next) {
+		const collection = req.customerCollection;
+		const slug = req.loggedCustomerSlug;
+		const validation = [];
+		if (req.body.name == "") {
+			validation.push("Please fill `Name`!");
+		}
+		const name = req.body.name;
+		if (req.body.email == "") {
+			validation.push("Please fill `Email`!");
+		}
+		const email = req.body.email;
+		if (req.body.password == "") {
+			validation.push("Please fill `Password`!");
+		}
+		const password = hashPassword(req.body.password);
+		let image_url
+		if (req.body.image_url == "") {
+			image_url = "https://www.ppt-backgrounds.net/thumbs/question-marks-black-a-white-backgrounds.jpg";
+		} else {
+			image_url = req.body.image_url;
+		}
+		if (validation.length > 0) {
+			res.status(400).json({ message: validation.join(", "), status: "error" });
+		} else {
+			const customer = await CustomerModel.findOne(collection, slug);
+			if (!customer) {
+				res.status(404).json({
+					message: "User not found!",
+					status: "error"
+				});
+			} else {
+				customer.name = name;
+				customer.email = email;
+				customer.password = password;
+				customer.image_url = image_url;
+				await CustomerModel.update(collection, slug, customer);
+				res.status(200).json({
+					message: "Successful update account!",
+					status: "success",
+					payload: {
+						customer
+					}
+				});
+			}
+		}
+	}
 	static async dashboard(req, res, next) {
 		const collection = req.customerCollection;
 		const collection2 = req.sellerCollection;
@@ -115,39 +162,59 @@ class CustomerController {
 	static async createLink(req, res, next) {
 		const collection = req.customerCollection;
 		const collection2 = req.sellerCollection;
-		const customerSlug = req.body.customerSlug;
+		const collection3 = req.chatCollection;
+		const customerSlug = req.loggedCustomerSlug;
 		const sellerSlug = req.body.sellerSlug;
 		const socketLink = `/${sellerSlug}/${customerSlug}`;
 		const customer = await CustomerModel.findOne(collection, customerSlug);
 		const seller = await SellerModel.findOne(collection2, sellerSlug);
-		const timestamp = new Date();
-		customer.links.push({
-			id: `link_${Date.now()}`,
-			link: socketLink,
-			seller: seller.name,
-			customer: customer.name,
-			createdAt: timestamp
-		});
-		seller.links.push({
-			id: `link_${Date.now()}`,
-			link: socketLink,
-			seller: seller.name,
-			customer: customer.name,
-			createdAt: timestamp
-		});
-		await CustomerModel.update(collection, customerSlug, customer)
-		await SellerModel.update(collection2, sellerSlug, seller);
-		res.status(200).json({
-			message: "Succesful add new chat!",
-			status: "success",
-			payload: {
-				link: socketLink
+		const created_at = new Date();
+		if (!customer || !seller) {
+			res.status(404).json({
+				message: "Data not found!",
+				status: "error"
+			});
+		} else {
+			const id = `link_${Date.now()}`;
+			customer.links.push({
+				id,
+				link: socketLink,
+				seller: seller.name,
+				customer: customer.name,
+				created_at
+			});
+			seller.links.push({
+				id,
+				link: socketLink,
+				seller: seller.name,
+				customer: customer.name,
+				created_at
+			});
+			await CustomerModel.update(collection, customerSlug, customer)
+			await SellerModel.update(collection2, sellerSlug, seller);
+
+			const obj = {
+				id,
+				link: socketLink,
+				seller_slug: sellerSlug,
+				customer_slug: customerSlug,
+				chats: [],
+				created_at
 			}
-		});
+			await ChatModel.create(collection3, obj);
+			res.status(200).json({
+				message: "Succesful add new chat!",
+				status: "success",
+				payload: {
+					link: obj
+				}
+			});
+		}
 	}
 	static async destroyLink(req, res, next) {
 		const collection = req.customerCollection;
 		const id = req.params.id;
+		console.log(id);
 		const slug = req.loggedCustomerSlug;
 		const customer = await CustomerModel.findOne(collection, slug);
 		if (!customer) {
@@ -161,10 +228,11 @@ class CustomerController {
 			customer.links.forEach(el => {
 				if (el.id != id) {
 					linksTemp.push(el);
+				} else {
 					flag = true;
 				}
 			});
-			if (flag) {
+			if (!flag) {
 				res.status(404).json({
 					message: "Data not found!",
 					status: "error"
