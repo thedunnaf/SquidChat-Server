@@ -188,6 +188,38 @@ class SellerController {
 			}
 		}
 	}
+	static async updateLinkReadStatus(req, res, next) {
+		const collection = req.sellerCollection;
+		const slug = req.loggedSellerSlug;
+		const id = req.params.id;
+		const seller = await SellerModel.findOne(collection, slug);
+		if (!seller) {
+			res.status(404).json({
+				message: "User not found!",
+				status: "error"
+			});
+		} else {
+			let flag = false;
+			seller.links.forEach(el => {
+				if (el.id == id) {
+					el.read = !el.read;
+					flag = true;
+				}
+			});
+			if (!flag) {
+				res.status(404).json({
+					message: "Data not found!",
+					status: "error"
+				});
+			} else {
+				await SellerModel.update(collection, slug, seller);
+				res.status(200).json({
+					message: "Succesful update read status!",
+					status: "success"
+				});
+			}
+		}
+	}
 	static async destroyLink(req, res, next) {
 		const collection = req.sellerCollection;
 		const slug = req.loggedSellerSlug;
