@@ -11,6 +11,8 @@ router.put("/updateAccount", CustomerController.updateAccount);
 router.get("/dashboard", CustomerController.dashboard);
 
 router.patch("/createLink", CustomerController.createLink);
+router.patch("/updateLinkReadStatus/:id", CustomerController.updateLinkReadStatus);
 router.patch("/destroyLink/:id", CustomerController.destroyLink);
+
 
 module.exports = router;

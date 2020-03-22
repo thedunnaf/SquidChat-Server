@@ -176,18 +176,22 @@ class CustomerController {
 			});
 		} else {
 			const id = `link_${Date.now()}`;
-			customer.links.push({
+			customer.links.unshift({
 				id,
 				link: socketLink,
 				seller: seller.name,
 				customer: customer.name,
+				last_chat: "",
+				read: false,
 				created_at
 			});
-			seller.links.push({
+			seller.links.unshift({
 				id,
 				link: socketLink,
 				seller: seller.name,
 				customer: customer.name,
+				last_chat: "",
+				read: false,
 				created_at
 			});
 			await CustomerModel.update(collection, customerSlug, customer)
@@ -211,11 +215,42 @@ class CustomerController {
 			});
 		}
 	}
+	static async updateLinkReadStatus(req, res, next) {
+		const collection = req.customerCollection;
+		const slug = req.loggedCustomerSlug;
+		const id = req.params.id;
+		const customer = await CustomerModel.findOne(collection, slug);
+		if (!customer) {
+			res.status(404).json({
+				message: "User not found!",
+				status: "error"
+			});
+		} else {
+			let flag = false;
+			customer.links.forEach(el => {
+				if (el.id == id) {
+					el.read = !el.read;
+					flag = true;
+				}
+			});
+			if (!flag) {
+				res.status(404).json({
+					message: "Data not found!",
+					status: "error"
+				});
+			} else {
+				await CustomerModel.update(collection, slug, customer);
+				res.status(200).json({
+					message: "Succesful update read status!",
+					status: "success"
+				});
+			}
+		}
+	}
 	static async destroyLink(req, res, next) {
 		const collection = req.customerCollection;
-		const id = req.params.id;
-		console.log(id);
 		const slug = req.loggedCustomerSlug;
+		const id = req.params.id;
 		const customer = await CustomerModel.findOne(collection, slug);
 		if (!customer) {
 			res.status(404).json({
