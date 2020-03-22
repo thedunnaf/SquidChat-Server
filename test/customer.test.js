@@ -8,6 +8,34 @@ const CUSTOMER_EMAIL = 'kudaliar@mail.com'
 const CUSTOMER_IMAGE = 'https://asset.kompas.com/crops/o4-cO3zGUI1UPgabt2c3dWcGLBY=/0x43:1333x932/750x500/data/photo/2019/10/30/5db92a4ef1bb9.jpg'
 let TOKEN
 
+
+beforeAll(() => {
+    const { MongoClient, ObjectId } = require('mongodb');
+
+    const url = `mongodb://localhost:27017`;
+    const dbName = "SquidChatTest";
+    const client = new MongoClient(
+        url,
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        }
+    );
+
+    client.connect(() => {
+        const db = client.db(dbName)
+        app.use((req, res, next) => {
+            req.db = db
+            req.ObjectId = ObjectId
+            next()
+        })
+        console.log('connect')
+    })
+
+});
+
+
+
 expect.extend({
     toBeTypeOf(value, argument) {
         const valueType = typeof value;
@@ -37,7 +65,7 @@ expect.extend({
 
 describe('Test Cutomer Auth', function () {
     describe('Test Customer Register Route', () => {
-        describe('Test Register Success', function () {
+        describe.only('Test Register Success', function () {
             test(`Should return 200  and object (message, status, payload)`, function (done) {
                 request(app)
                     .post('/customers/register')
@@ -49,18 +77,20 @@ describe('Test Cutomer Auth', function () {
                     })
                     .then(response => {
                         const { body, status } = response
-                        const { payload: { payload: seller } } = body
-
+                        const { payload } = body
+                        const { payload: customer } = body
                         expect(status).toBe(201)
-                        expect(body).toHaveProperty('message', 'Register Succes')
+                        console.log(payload.customer)
+                        console.log(customer)
+                        expect(body).toHaveProperty('message', 'Register success!')
                         expect(body).toHaveProperty('status', 'success')
-                        expect(seller).toHaveProperty('name', CUSTOMER_NAME)
-                        expect(seller).toHaveProperty('email', CUSTOMER_EMAIL)
-                        expect(seller).toHaveProperty('password', CUSTOMER_PASSWORD)
-                        expect(seller).toHaveProperty('image_url', CUSTOMER_IMAGE_URL)
-                        expect(seller).toHaveProperty('slug')
-                        expect(seller).toHaveProperty('links')
-                        expect(seller).toHaveProperty('_id')
+                        expect(payload.customer).toHaveProperty('name', CUSTOMER_NAME)
+                        expect(payload.customer).toHaveProperty('email', CUSTOMER_EMAIL)
+                        expect(payload.customer).toHaveProperty('password', CUSTOMER_PASSWORD)
+                        expect(payload.customer).toHaveProperty('image_url', CUSTOMER_IMAGE_URL)
+                        expect(payload.customer).toHaveProperty('slug')
+                        expect(payload.customer).toHaveProperty('links')
+                        expect(payload.customer).toHaveProperty('_id')
                         done()
                     })
             })
@@ -191,13 +221,13 @@ describe('Test Cutomer Auth', function () {
             })
         })
         describe('Test Seller Dashboard Failed because invalid token', () => {
-            test(`Should return status 404 and object(message, status)`, function (done) {
+            test(`Should return status 401 and object(message, status)`, function (done) {
                 request(app)
                     .get('/customers/dashboard')
                     .set('token', 'awdwdawd12121')
                     .then(response => {
                         const { body, status } = response
-                        expect(status).toBe(404)
+                        expect(status).toBe(401)
                         expect(body).toHaveProperty('message', 'User not found!')
                         expect(body).toHaveProperty('status', 'error')
                         done()
