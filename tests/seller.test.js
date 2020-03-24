@@ -1,4 +1,4 @@
-
+// const bcrypt = require('../helpers/bcrypt')
 // const request = require('supertest')
 // const app = require('../app')
 // const jwt = require('../helpers/jwt')
@@ -27,7 +27,7 @@
 //         if (type === argument) {
 //             return {
 //                 message: () => `expected ${value} to be type of ${type}`,
-//                 pass: true
+//                 pass: trueexpect(seller).toHaveProperty('password', SELLER_PASSWORD)
 //             };
 //         } else {
 //             return {
@@ -46,7 +46,7 @@
 //                 request(app)
 //                     .post('/sellers/register')
 //                     .send({
-//                         category: SELLER_CATEGORY,
+//                         seller_category: SELLER_CATEGORY,
 //                         email: SELLER_EMAIL,
 //                         name: SELLER_NAME,
 //                         password: SELLER_PASSWORD,
@@ -56,20 +56,24 @@
 //                     .then(response => {
 //                         const { body, status } = response
 //                         const { payload: seller } = body
+//                         const { payload } = body
 //                         expect(status).toBe(201)
-//                         expect(body).toHaveProperty('message', 'Register Succes')
+//                         console.log(seller, '==============================')
+//                         console.log(payload.seller)
+//                         const decode = bcrypt.comparePassword(SELLER_PASSWORD, payload.seller.password)
+//                         expect(body).toHaveProperty('message', 'Register success!')
 //                         expect(body).toHaveProperty('status', 'success')
-//                         expect(seller).toHaveProperty('name', SELLER_NAME)
-//                         expect(seller).toHaveProperty('email', SELLER_EMAIL)
-//                         expect(seller).toHaveProperty('password', SELLER_PASSWORD)
-//                         expect(seller).toHaveProperty('image_url', SELLER_IMAGE_URL)
-//                         expect(seller).toHaveProperty('phone_number', SELLER_PHONE_NUMBER)
-//                         expect(seller).toHaveProperty('seller_category', SELLER_CATEGORY)
-//                         expect(seller).toHaveProperty('slug')
-//                         expect(seller).toHaveProperty('links')
-//                         expect(seller).toHaveProperty('collections')
-//                         expect(seller).toHaveProperty('chat_bots')
-//                         expect(seller).toHaveProperty('_id')
+//                         expect(payload.seller).toHaveProperty('name', SELLER_NAME)
+//                         expect(payload.seller).toHaveProperty('email', SELLER_EMAIL)
+//                         expect(decode).toBe(true)
+//                         expect(payload.seller).toHaveProperty('image_url', SELLER_IMAGE_URL)
+//                         expect(payload.seller).toHaveProperty('phone_number', SELLER_PHONE_NUMBER)
+//                         expect(payload.seller).toHaveProperty('seller_category', SELLER_CATEGORY)
+//                         expect(payload.seller).toHaveProperty('slug')
+//                         expect(payload.seller).toHaveProperty('links')
+//                         expect(payload.seller).toHaveProperty('collections')
+//                         expect(payload.seller).toHaveProperty('chat_bots')
+//                         expect(payload.seller).toHaveProperty('_id')
 //                         done()
 //                     })
 //             })
@@ -110,14 +114,14 @@
 //                     .then(response => {
 //                         const { body, status } = response
 //                         const { payload } = body
-//                         console.log(payload)
 //                         TOKEN = payload.token
+//                         console.log(TOKEN)
 //                         const decode = jwt.verifyToken(payload.token)
-//                         expect(status).toBe(201)
-//                         expect(body).toHaveProperty('message', 'Login Succes')
+//                         expect(status).toBe(200)
+//                         expect(body).toHaveProperty('message', 'Login successful!')
 //                         expect(body).toHaveProperty('status', 'success')
 //                         expect(payload).toHaveProperty('token', expect.any(String))
-//                         expect(decode.payload).toHaveProperty('slug')
+//                         expect(decode).toHaveProperty('slug')
 //                         done()
 //                     })
 //             })
@@ -186,21 +190,23 @@
 //                     .set('token', TOKEN)
 //                     .then(response => {
 //                         const { body, status } = response
-//                         const { payload: seller } = body
-//                         expect(status).toBe(201)
+//                         const { payload } = body
+//                         expect(status).toBe(200)
 //                         expect(body).toHaveProperty('message', 'Successful access dashboard!')
 //                         expect(body).toHaveProperty('status', 'success')
-//                         expect(seller).toHaveProperty('name', SELLER_NAME)
-//                         expect(seller).toHaveProperty('email', SELLER_EMAIL)
-//                         expect(seller).toHaveProperty('password', SELLER_PASSWORD)
-//                         expect(seller).toHaveProperty('image_url', SELLER_IMAGE_URL)
-//                         expect(seller).toHaveProperty('phone_number', SELLER_PHONE_NUMBER)
-//                         expect(seller).toHaveProperty('seller_category', SELLER_CATEGORY)
-//                         expect(seller).toHaveProperty('slug')
-//                         expect(seller).toHaveProperty('links')
-//                         expect(seller).toHaveProperty('collections')
-//                         expect(seller).toHaveProperty('chat_bots')
-//                         expect(seller).toHaveProperty('_id')
+//                         console.log(payload)
+//                         const decode = bcrypt.comparePassword(SELLER_PASSWORD, payload.seller.password)
+//                         expect(payload.seller).toHaveProperty('name', SELLER_NAME)
+//                         expect(payload.seller).toHaveProperty('email', SELLER_EMAIL)
+//                         expect(decode).toBe(true)
+//                         expect(payload.seller).toHaveProperty('image_url', SELLER_IMAGE_URL)
+//                         expect(payload.seller).toHaveProperty('phone_number', SELLER_PHONE_NUMBER)
+//                         expect(payload.seller).toHaveProperty('seller_category', SELLER_CATEGORY)
+//                         expect(payload.seller).toHaveProperty('slug')
+//                         expect(payload.seller).toHaveProperty('links')
+//                         expect(payload.seller).toHaveProperty('collections')
+//                         expect(payload.seller).toHaveProperty('chat_bots')
+//                         expect(payload.seller).toHaveProperty('_id')
 //                         done()
 //                     })
 //             })
@@ -214,7 +220,7 @@
 //                     .then(response => {
 //                         const { body, status } = response
 //                         expect(status).toBe(401)
-//                         expect(body).toHaveProperty('message', 'User not found!')
+//                         expect(body).toHaveProperty('message', 'Token invalid!')
 //                         expect(body).toHaveProperty('status', 'error')
 //                         done()
 //                     })

@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV == "development") {
-	require("dotenv").config();
-}
+require("dotenv").config();
+// if (process.env.NODE_ENV == "development") {
+// }
 const express = require("express");
 const app = express();
 var server = require('http').Server(app);
@@ -20,8 +20,8 @@ app.use(function (req, res, next) {
 
 app.use("/", Routers);
 
-server.listen(port, () => {
-	console.log(`Listening on port ${port}`);
-});
+// server.listen(port, () => {
+// 	console.log(`Listening on port ${port}`);
+// });
 
-// module.exports = app
+module.exports = app

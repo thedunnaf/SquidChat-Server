@@ -201,6 +201,7 @@ class CustomerController {
 				chats: [],
 				created_at
 			}
+			console.log(sellerSlug, obj)
 			await ChatModel.create(collection3, obj);
 			res.status(200).json({
 				message: "Succesful add new chat!",
