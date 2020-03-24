@@ -9,16 +9,6 @@ const CUSTOMER_EMAIL = 'kudaliar@mail.com'
 const CUSTOMER_IMAGE = 'https://asset.kompas.com/crops/o4-cO3zGUI1UPgabt2c3dWcGLBY=/0x43:1333x932/750x500/data/photo/2019/10/30/5db92a4ef1bb9.jpg'
 let TOKEN
 
-// beforeAll((done) => {
-//     CustomerModel.create(collection, obj)
-//         .then((user) => {
-//             // console.log(user)
-//             const token = jwt.generateToken(user)
-//             userToken += token
-//             done()
-//         })
-// })
-
 
 expect.extend({
     toBeTypeOf(value, argument) {
@@ -247,6 +237,7 @@ describe('Test Cutomer Auth', function () {
                     .then(response => {
                         const { body, status } = response
                         const { payload } = body
+                        console.log(payload.customer.links)
                         expect(status).toBe(200)
                         expect(body).toHaveProperty('message', 'Successful access dashboard!')
                         expect(body).toHaveProperty('status', 'success')
@@ -275,20 +266,45 @@ describe('Test Cutomer Auth', function () {
     })
 
     describe('Test Customer Link', function () {
+        let SELLER_SLUG
+        describe('Test Seller Register Success', function () {
+            test('Should return 201 and object (message, status, payload)', function (done) {
+                request(app)
+                    .post('/sellers/register')
+                    .send({
+                        seller_category: 'Kesehatan',
+                        email: 'kuda@mail.com',
+                        name: 'kuda',
+                        password: 'kudaliar',
+                        image_url: '',
+                        phone_number: '087880070375'
+                    })
+                    .then(response => {
+                        const { body, status } = response
+                        const { payload } = body
+                        expect(status).toBe(201)
+                        SELLER_SLUG = payload.seller.slug
+                        done()
+                    })
+            })
+        })
+
+
+
         describe('Test Customer Create Link', () => {
             test('Should return 200 and object(message, status, payload)', function (done) {
                 request(app)
                     .patch('/customers/createLink')
                     .set('token', TOKEN)
                     .send({
-                        sellerSlug: "Nanda_1585019390596"
+                        sellerSlug: SELLER_SLUG
                     })
                     .then(response => {
                         const { body, status } = response
                         console.log(body)
-                        expect(status).toBe(401)
-                        expect(body).toHaveProperty('message', 'Succesful add chat!')
-                        expect(body).toHaveProperty('status', 'success')
+                        // expect(status).toBe(401)
+                        // expect(body).toHaveProperty('message', 'Succesful add chat!')
+                        // expect(body).toHaveProperty('status', 'success')
                         done()
                     })
             })
