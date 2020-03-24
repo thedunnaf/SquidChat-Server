@@ -194,14 +194,17 @@ class CustomerController {
 			await SellerModel.update(collection2, sellerSlug, seller);
 
 			const obj = {
-				id,
+				// id,
 				link: socketLink,
 				seller_slug: sellerSlug,
 				customer_slug: customerSlug,
 				chats: [],
-				created_at
+				// created_at
 			}
-			console.log(sellerSlug, obj)
+			console.log(sellerSlug, obj, '=========================')
+			// for (let i in obj) {
+			// 	console.log(typeof obj[i], i)
+			// }
 			await ChatModel.create(collection3, obj);
 			res.status(200).json({
 				message: "Succesful add new chat!",

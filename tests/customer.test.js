@@ -8,6 +8,8 @@ const CUSTOMER_PASSWORD = 'Liar'
 const CUSTOMER_EMAIL = 'kudaliar@mail.com'
 const CUSTOMER_IMAGE = 'https://asset.kompas.com/crops/o4-cO3zGUI1UPgabt2c3dWcGLBY=/0x43:1333x932/750x500/data/photo/2019/10/30/5db92a4ef1bb9.jpg'
 let TOKEN
+let CUSTOMER_SLUG
+const { client, dbName } = require("../config");
 
 
 expect.extend({
@@ -267,7 +269,7 @@ describe('Test Cutomer Auth', function () {
 
     describe('Test Customer Link', function () {
         let SELLER_SLUG
-        describe('Test Seller Register Success', function () {
+        describe('Test Seller Register Dummy', function () {
             test('Should return 201 and object (message, status, payload)', function (done) {
                 request(app)
                     .post('/sellers/register')
@@ -301,10 +303,68 @@ describe('Test Cutomer Auth', function () {
                     })
                     .then(response => {
                         const { body, status } = response
-                        console.log(body)
+                        console.log(body, '==============================')
                         // expect(status).toBe(401)
                         // expect(body).toHaveProperty('message', 'Succesful add chat!')
                         // expect(body).toHaveProperty('status', 'success')
+                        done()
+                    })
+            })
+        })
+    })
+
+
+    describe('Test find all chat', () => {
+        let LINK
+        describe('Test Customer Dashboard Success', () => {
+            test('Should return 400 and object(message, status, payload)', function (done) {
+                request(app)
+                    .get('/customers/dashboard')
+                    .set('token', TOKEN)
+                    .then(response => {
+                        const { body, status } = response
+                        const { payload } = body
+                        console.log(payload.customer.links[0].link, '=============================')
+                        LINK = payload.customer.links[0].link
+                        expect(status).toBe(200)
+                        done()
+                    })
+            })
+        })
+
+        describe('Test Customer Get All Chat', () => {
+            test('Should return 200 and object(message, status, payload)', function (done) {
+                request(app)
+                    .post('/chats')
+                    .set('token', TOKEN)
+                    .send({
+                        link: LINK
+                    })
+                    .then(response => {
+                        const { body, status } = response
+                        const { payload } = body
+                        console.log(body, '===============================')
+                        expect(status).toBe(200)
+                        done()
+                    })
+            })
+        })
+
+        describe('Test Customer Get All Chat', () => {
+            test('Should return 400 and object(message, status, payload)', function (done) {
+                request(app)
+                    .post('/chats')
+                    .set('token', TOKEN)
+                    .send({
+                        link: LINK
+                    })
+                    .then(response => {
+                        const { body, status } = response
+                        const { payload } = body
+                        console.log(body, '===============================')
+                        expect(status).toBe(400)
+                        expect(body).toHaveProperty('message', 'Data not found!')
+                        expect(body).toHaveProperty('status', 'error')
                         done()
                     })
             })

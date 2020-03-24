@@ -7,6 +7,7 @@ class ChatController {
     static async findAll(req, res, next) {
         const collection = req.chatCollection;
         const link = req.body.link;
+        console.log(link)
         const chats = await ChatModel.findOne(collection, link);
         if (!chats) {
             res.status(404).json({
