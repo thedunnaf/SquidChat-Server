@@ -116,25 +116,25 @@ class CustomerController {
 			res.status(400).json({ message: validation.join(", "), status: "error" });
 		} else {
 			const customer = await CustomerModel.findOne(collection, slug);
-			if (!customer) {
-				res.status(404).json({
-					message: "User not found!",
-					status: "error"
-				});
-			} else {
-				customer.name = name;
-				customer.email = email;
-				customer.password = password;
-				customer.image_url = image_url;
-				await CustomerModel.update(collection, slug, customer);
-				res.status(200).json({
-					message: "Successful update account!",
-					status: "success",
-					payload: {
-						customer
-					}
-				});
-			}
+			// if (!customer) {
+			// 	res.status(404).json({
+			// 		message: "User not found!",
+			// 		status: "error"
+			// 	});
+			// } else {
+			// }
+			customer.name = name;
+			customer.email = email;
+			customer.password = password;
+			customer.image_url = image_url;
+			await CustomerModel.update(collection, slug, customer);
+			res.status(200).json({
+				message: "Successful update account!",
+				status: "success",
+				payload: {
+					customer
+				}
+			});
 		}
 	}
 	static async dashboard(req, res, next) {
@@ -142,115 +142,112 @@ class CustomerController {
 		const collection2 = req.sellerCollection;
 		const slug = req.loggedCustomerSlug;
 		const responses = await CustomerModel.findOne(collection, slug);
-		if (!responses) {
-			res.status(404).json({
-				message: "User not found!",
-				status: "error"
-			});
-		} else {
-			const sellers = await SellerModel.findAll(collection2);
-			res.status(200).json({
-				message: "Successful access dashboard!",
-				status: "success",
-				payload: {
-					customer: responses,
-					sellers
-				}
-			});
-		}
+		// if (!responses) {
+		// 	res.status(404).json({
+		// 		message: "User not found!",
+		// 		status: "error"
+		// 	});
+		// } else {
+		// }
+		const sellers = await SellerModel.findAll(collection2);
+		res.status(200).json({
+			message: "Successful access dashboard!",
+			status: "success",
+			payload: {
+				customer: responses,
+				sellers
+			}
+		});
 	}
-	static async createLink(req, res, next) {
-		const collection = req.customerCollection;
-		const collection2 = req.sellerCollection;
-		const collection3 = req.chatCollection;
-		const customerSlug = req.loggedCustomerSlug;
-		const sellerSlug = req.body.sellerSlug;
-		const socketLink = `/${sellerSlug}/${customerSlug}`;
-		const customer = await CustomerModel.findOne(collection, customerSlug);
-		const seller = await SellerModel.findOne(collection2, sellerSlug);
-		const created_at = new Date();
-		if (!customer || !seller) {
-			res.status(404).json({
-				message: "Data not found!",
-				status: "error"
-			});
-		} else {
-			const id = `link_${Date.now()}`;
-			customer.links.push({
-				id,
-				link: socketLink,
-				seller: seller.name,
-				customer: customer.name,
-				created_at
-			});
-			seller.links.push({
-				id,
-				link: socketLink,
-				seller: seller.name,
-				customer: customer.name,
-				created_at
-			});
-			await CustomerModel.update(collection, customerSlug, customer)
-			await SellerModel.update(collection2, sellerSlug, seller);
+	// static async createLink(req, res, next) {
+	// 	const collection = req.customerCollection;
+	// 	const collection2 = req.sellerCollection;
+	// 	const collection3 = req.chatCollection;
+	// 	const customerSlug = req.loggedCustomerSlug;
+	// 	const sellerSlug = req.body.sellerSlug;
+	// 	const socketLink = `/${sellerSlug}/${customerSlug}`;
+	// 	const customer = await CustomerModel.findOne(collection, customerSlug);
+	// 	const seller = await SellerModel.findOne(collection2, sellerSlug);
+	// 	const created_at = new Date();
+	// 	if (!customer || !seller) {
+	// 		res.status(404).json({
+	// 			message: "Data not found!",
+	// 			status: "error"
+	// 		});
+	// 	} else {
+	// 		const id = `link_${Date.now()}`;
+	// 		customer.links.push({
+	// 			id,
+	// 			link: socketLink,
+	// 			seller: seller.name,
+	// 			customer: customer.name,
+	// 			created_at
+	// 		});
+	// 		seller.links.push({
+	// 			id,
+	// 			link: socketLink,
+	// 			seller: seller.name,
+	// 			customer: customer.name,
+	// 			created_at
+	// 		});
+	// 		await CustomerModel.update(collection, customerSlug, customer)
+	// 		await SellerModel.update(collection2, sellerSlug, seller);
 
-			const obj = {
-				// id,
-				link: socketLink,
-				seller_slug: sellerSlug,
-				customer_slug: customerSlug,
-				chats: [],
-				// created_at
-			}
-			console.log(sellerSlug, obj, '=========================')
-			// for (let i in obj) {
-			// 	console.log(typeof obj[i], i)
-			// }
-			await ChatModel.create(collection3, obj);
-			res.status(200).json({
-				message: "Succesful add new chat!",
-				status: "success",
-				payload: {
-					link: obj
-				}
-			});
-		}
-	}
-	static async destroyLink(req, res, next) {
-		const collection = req.customerCollection;
-		const id = req.params.id;
-		console.log(id);
-		const slug = req.loggedCustomerSlug;
-		const customer = await CustomerModel.findOne(collection, slug);
-		if (!customer) {
-			res.status(404).json({
-				message: "User not found!",
-				status: "error"
-			});
-		} else {
-			const linksTemp = [];
-			let flag = false;
-			customer.links.forEach(el => {
-				if (el.id != id) {
-					linksTemp.push(el);
-				} else {
-					flag = true;
-				}
-			});
-			if (!flag) {
-				res.status(404).json({
-					message: "Data not found!",
-					status: "error"
-				});
-			} else {
-				customer.links = linksTemp;
-				await CustomerModel.update(collection, slug, customer);
-				res.status(200).json({
-					message: "Succesful delete chat!",
-					status: "success"
-				});
-			}
-		}
-	}
+	// 		const obj = {
+	// 			id,
+	// 			link: socketLink,
+	// 			seller_slug: sellerSlug,
+	// 			customer_slug: customerSlug,
+	// 			chats: [],
+	// 			created_at
+	// 		}
+	// 		console.log(obj)
+	// 		await ChatModel.create(collection3, obj);
+	// 		res.status(200).json({
+	// 			message: "Succesful add new chat!",
+	// 			status: "success",
+	// 			payload: {
+	// 				link: obj
+	// 			}
+	// 		});
+	// 	}
+	// }
+	// static async destroyLink(req, res, next) {
+	// 	const collection = req.customerCollection;
+	// 	const id = req.params.id;
+	// 	console.log(id);
+	// 	const slug = req.loggedCustomerSlug;
+	// 	const customer = await CustomerModel.findOne(collection, slug);
+	// 	if (!customer) {
+	// 		res.status(404).json({
+	// 			message: "User not found!",
+	// 			status: "error"
+	// 		});
+	// 	} else {
+	// 		const linksTemp = [];
+	// 		let flag = false;
+	// 		customer.links.forEach(el => {
+	// 			if (el.id != id) {
+	// 				linksTemp.push(el);
+	// 			} else {
+	// 				flag = true;
+	// 			}
+	// 		});
+	// 		if (!flag) {
+	// 			res.status(404).json({
+	// 				message: "Data not found!",
+	// 				status: "error"
+	// 			});
+	// 		} else {
+	// 			customer.links = linksTemp;
+	// 			await CustomerModel.update(collection, slug, customer);
+	// 			res.status(200).json({
+	// 				message: "Succesful delete chat!",
+	// 				status: "success"
+	// 			});
+	// 		}
+	// 	}
+	// }
 }
 
 module.exports = CustomerController;

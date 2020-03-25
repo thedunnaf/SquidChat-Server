@@ -10,7 +10,7 @@ router.use(AuthenticationSeller);
 router.get("/dashboard", SellerController.dashboard);
 router.put("/updateAccount", SellerController.updateAccount);
 
-router.patch("/destroyLink/:id", SellerController.destroyLink);
+// router.patch("/destroyLink/:id", SellerController.destroyLink);
 
 router.patch("/createChatBot", SellerController.createChatBot);
 router.patch("/updateChatBot/:id", SellerController.updateChatBot);

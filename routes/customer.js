@@ -10,7 +10,7 @@ router.use(AuthenticationCustomer);
 router.put("/updateAccount", CustomerController.updateAccount);
 router.get("/dashboard", CustomerController.dashboard);
 
-router.patch("/createLink", CustomerController.createLink);
-router.patch("/destroyLink/:id", CustomerController.destroyLink);
+// router.patch("/createLink", CustomerController.createLink);
+// router.patch("/destroyLink/:id", CustomerController.destroyLink);
 
 module.exports = router;

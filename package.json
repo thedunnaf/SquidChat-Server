@@ -36,5 +36,14 @@
     "slugify": "^1.4.0",
     "socket.io": "^2.3.0",
     "supertest": "^4.0.2"
+  },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "./controllers/chat.js",
+      "./models/chat.js",
+      "./models/customer.js",
+      "./models/seller.js",
+      "./middlewares/connect.js"
+    ]
   }
 }
